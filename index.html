@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Veterna</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://raw.githubusercontent.com/virtueterna28/web/main/mentahan%20aset%20web/Beranda/coban%20talun%20veterna.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
+
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                        <img src="https://raw.githubusercontent.com/virtueterna28/web/refs/heads/main/mentahan%20aset%20web/logo%20veterna%20(1).png" alt="Logo Veterna" class="w-10 h-10 object-contain">
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">V-Absensi </h1>
+                        <p class="text-xs sm:text-sm text-blue-200">Sistem Pencatatan Kehadiran Anggota Veterna</p>
+                    </div>
+                </div>
+
+                <!-- Select Date -->
+                <div class="flex items-center bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-sm">
+                    <i class="fa-regular fa-calendar-days mr-2 text-blue-200"></i>
+                    <label for="attendanceDate" class="mr-2 font-medium text-xs sm:text-sm">Tanggal:</label>
+                    <input type="date" id="attendanceDate" class="bg-white text-slate-800 font-medium px-2 py-1 rounded text-xs sm:text-sm border-0 focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+
+        <!-- Statistics Dashboard -->
+        <section class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Siswa</p>
+                    <h3 id="statTotal" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Hadir</p>
+                    <div class="flex items-baseline space-x-1">
+                        <h3 id="statHadir" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+                        <span id="percHadir" class="text-xs font-medium text-emerald-500">(0%)</span>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Izin</p>
+                    <div class="flex items-baseline space-x-1">
+                        <h3 id="statIzin" class="text-2xl font-bold text-blue-600 mt-1">0</h3>
+                        <span id="percIzin" class="text-xs font-medium text-blue-500">(0%)</span>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Sakit</p>
+                    <div class="flex items-baseline space-x-1">
+                        <h3 id="statSakit" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
+                        <span id="percSakit" class="text-xs font-medium text-amber-500">(0%)</span>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-100 col-span-2 sm:col-span-1 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-rose-600 uppercase tracking-wider">Alfa</p>
+                    <div class="flex items-baseline space-x-1">
+                        <h3 id="statAlfa" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
+                        <span id="percAlfa" class="text-xs font-medium text-rose-500">(0%)</span>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Toolbar: Search, Filters, Quick Actions -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <!-- Search & Status Filter -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" placeholder="Cari nama siswa..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    </div>
+                    <select id="statusFilter" class="px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="ALL">Semua Filter Status</option>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alfa">Alfa</option>
+                        <option value="UNSET">Belum Diumumkan / Set</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="btnMarkAllHadir" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition shadow-sm active:scale-95">
+                        <i class="fa-solid fa-check-double mr-1.5"></i> Set Semua Hadir
+                    </button>
+
+                    <button id="btnExportCSV" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3.5 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium transition shadow-sm active:scale-95">
+                        <i class="fa-solid fa-file-csv mr-1.5"></i> Ekspor CSV
+                    </button>
+
+                    <button id="btnCopyRekap" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition shadow-sm active:scale-95">
+                        <i class="fa-solid fa-copy mr-1.5"></i> Salin Rekap
+                    </button>
+
+                    <button id="btnResetAll" class="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-sm font-medium border border-slate-200 hover:border-rose-200 transition" title="Reset Absensi Hari Ini">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attendance List / Table Container -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Daftar Kehadiran Siswa</span>
+                <span id="showingCount" class="text-xs font-semibold text-slate-600">Menampilkan 0 dari 0 siswa</span>
+            </div>
+
+            <!-- Table for Desktop & Tablet -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                            <th class="py-3 px-4 w-12 text-center">No</th>
+                            <th class="py-3 px-4 min-w-[200px]">Nama Lengkap Siswa</th>
+                            <th class="py-3 px-4 min-w-[280px]">Status Kehadiran</th>
+                            <th class="py-3 px-4 min-w-[250px]">Alasan (Izin / Sakit)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Dynamic content via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty Search Result State -->
+            <div id="emptyState" class="hidden py-12 text-center">
+                <i class="fa-solid fa-user-slash text-4xl text-slate-300 mb-3"></i>
+                <p class="text-slate-500 font-medium">Siswa tidak ditemukan</p>
+                <p class="text-xs text-slate-400 mt-1">Coba gunakan kata kunci pencarian atau filter lain.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Modal Confirmation / Rekap View -->
+    <div id="rekapModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-5 py-4 bg-indigo-600 text-white flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check"></i> Pratinjau Teks Rekapitulasi
+                </h3>
+                <button id="btnCloseModal" class="text-white/80 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 overflow-y-auto">
+                <p class="text-xs text-slate-500 mb-2">Teks di bawah siap disalin dan dikirim langsung ke grup WA / Wali Murid:</p>
+                <textarea id="rekapTextArea" class="w-full h-64 p-3 border border-slate-300 rounded-lg text-xs font-mono bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" readonly></textarea>
+            </div>
+            <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button id="btnCopyFromModal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+                    <i class="fa-solid fa-copy mr-1"></i> Salin Teks
+                </button>
+                <button id="btnCloseModalBtn" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Data nama siswa lengkap dari prompt
+        const rawStudentNames = [
+            "Abdul Aziz Abiyyu",
+            "Abdurrahman Mardiyanto",
+            "Abhipraya Damas Okta Ardana",
+            "Achmad Abdul Fattah",
+            "Ah'naf Syauqi Erghoza",
+            "Ahmad Alrazi Drachman",
+            "Ahmad Althaf Rabbani",
+            "Ahmad Dino Habibie",
+            "Ahmad Dzakwan Alify Zayyin",
+            "Ahmad Hilmi Muzaki",
+            "Ahmad Irsyad Taqiy",
+            "Ahnaf Dhiaurrahman",
+            "Ain Muyassar Yusuf",
+            "Ajisaka Panji Nugroho",
+            "Akbar Faisal",
+            "Alfarabi Ibnu Biyansyah",
+            "Alkiev Masyathir",
+            "Almer Mahdy Irhab Fayyadh",
+            "Arka Asyraf Rasyadan",
+            "Arsyad Fajri Risam Rendra",
+            "Athalah Hasan Al-ghifari",
+            "Attariq Haidar Rasyidin",
+            "Azzam Tsaqib Junaed",
+            "Bintang Putra Ramadan",
+            "Daffa' Hanif Amrullah",
+            "Daris Irsyad Fachri Ahmad",
+            "Dzaky Ghaisan Susanto",
+            "Ericko Sam Pramudana",
+            "Fahim Aryan Zaki",
+            "Fahri Husaini Wahyudi",
+            "Faith Jadda Fillah",
+            "Faiz Lutfi Zahwan",
+            "Faris Ash Shiddiq",
+            "Farras Shiddiq Gusfa",
+            "Ghufron Waliyyuddin Saldi",
+            "Hafizh Nur Raihan",
+            "Haikal Ilham Akbar",
+            "Hamzah Fauzan Aziz",
+            "Hanif Ibni Nizam",
+            "Hibatulloh Anas",
+            "Hifzhan Eizzany Fahrudin",
+            "Hilal Akbar Laga Diputra",
+            "Ikhwan Setiawan",
+            "Ilham Bintang Yuar",
+            "Khenza Zurheim Muhammad Mulyono",
+            "Khenzo Sudhies Muhammad Mulyono",
+            "Liwa El Nashr Mubarok",
+            "M Rosydan Ahmad",
+            "M Zein Yusuf",
+            "M. Arhaburizqi Azzaky",
+            "Mandala Budhiana Putra",
+            "Marhaenusa Rayhandriansyah",
+            "Miqdad Akrami Azra",
+            "Mochamad Fathir Bintang Ananta",
+            "Mohammad Shaffa Revolusi Akbar",
+            "Muhammad Abiyyu Dhafran Ansori",
+            "Muhammad Afzaal Fazl Naim",
+            "Muhammad Ahyan Rizky",
+            "Muhammad Alif Muaffaq",
+            "Muhammad Anis Muwaffaq Siddik",
+            "Muhammad Denzel Abrisam",
+            "Muhammad Dhaif Kusyu Nur Hakim",
+            "Muhammad Dzaki Nafil",
+            "Muhammad Dzaky Al Fajry",
+            "Muhammad Dzaky Ammar",
+            "Muhammad Fathur Rabbani",
+            "Muhammad Fatih Radeafala",
+            "Muhammad Ghalib Luthfiansyah",
+            "Muhammad Hadil Ulya",
+            "Muhammad Haidar Faiz",
+            "Muhammad Isyan Aryasatya",
+            "Muhammad Khalid Assauri",
+            "Muhammad Nadhif Anwar",
+            "Muhammad Radithya Alvaro Arafat",
+            "Muhammad Rasya Ibrahim Syachputra",
+            "Muhammad Said Khotob",
+            "Muhammad Syamil Ibrahim",
+            "Muhandis Alfatihatul Quds",
+            "Nabhan Fawwaz Mustofa",
+            "Nabil Amru Andhara Hamid",
+            "Nabil Rouf Aditya",
+            "Nafis Hasbi Ihsani",
+            "Nafis Herza Imani Yusuf",
+            "Najmir Zahran Karim",
+            "Nur Habibie Yusuf Ibrahim",
+            "Omar Maqil Ghaisani",
+            "Rabbani Dzaki Ramadhan",
+            "Radja Chesta Benisia",
+            "Rafa Naufal Nashrullah",
+            "Rafid Giri Wardana Jauhari",
+            "Ravi Kusuma Wardana",
+            "Rayandi Airawan Sukmawardana",
+            "Riffat Akmal Mokoginta",
+            "Rizqullah Ilham Fathoni",
+            "Wahyu Nur Arifianto"
+        ];
+
+        // State Management
+        let currentDate = "";
+        let attendanceData = {}; // Format: { "YYYY-MM-DD": { studentId: { status: 'Hadir'|'Izin'|'Sakit'|'Alfa'|'', reason: '' } } }
+
+        // DOM Elements
+        const dateInput = document.getElementById('attendanceDate');
+        const tableBody = document.getElementById('attendanceTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const emptyState = document.getElementById('emptyState');
+        const showingCount = document.getElementById('showingCount');
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set current date to today (YYYY-MM-DD)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            currentDate = `${year}-${month}-${day}`;
+            dateInput.value = currentDate;
+
+            // Load data from LocalStorage
+            loadAttendanceData();
+
+            // Event Listeners
+            dateInput.addEventListener('change', (e) => {
+                currentDate = e.target.value || currentDate;
+                loadAttendanceData();
+            });
+
+            searchInput.addEventListener('input', renderTable);
+            statusFilter.addEventListener('change', renderTable);
+
+            document.getElementById('btnMarkAllHadir').addEventListener('click', markAllPresent);
+            document.getElementById('btnResetAll').addEventListener('click', resetAllAttendance);
+            document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('btnCopyRekap').addEventListener('click', openRekapModal);
+
+            // Modal events
+            document.getElementById('btnCloseModal').addEventListener('click', closeRekapModal);
+            document.getElementById('btnCloseModalBtn').addEventListener('click', closeRekapModal);
+            document.getElementById('btnCopyFromModal').addEventListener('click', copyRekapText);
+
+            renderTable();
+        });
+
+        // Load or initialize date attendance
+        function loadAttendanceData() {
+            const stored = localStorage.getItem('absensi_siswa_db');
+            if (stored) {
+                try {
+                    attendanceData = JSON.parse(stored);
+                } catch (e) {
+                    attendanceData = {};
+                }
+            }
+
+            // Ensure current date exists in state
+            if (!attendanceData[currentDate]) {
+                attendanceData[currentDate] = {};
+                rawStudentNames.forEach((name, idx) => {
+                    attendanceData[currentDate][idx] = {
+                        name: name,
+                        status: 'Hadir', // Default status: Hadir
+                        reason: ''
+                    };
+                });
+                saveToLocalStorage();
+            }
+
+            renderTable();
+        }
+
+        // Save state to LocalStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('absensi_siswa_db', JSON.stringify(attendanceData));
+            updateStatistics();
+        }
+
+        // Render attendance table
+        function renderTable() {
+            const query = searchInput.value.toLowerCase().trim();
+            const filterVal = statusFilter.value;
+
+            const dayData = attendanceData[currentDate] || {};
+            tableBody.innerHTML = '';
+
+            let visibleCount = 0;
+
+            rawStudentNames.forEach((name, idx) => {
+                const item = dayData[idx] || { name: name, status: 'Hadir', reason: '' };
+                const matchName = name.toLowerCase().includes(query);
+                
+                let matchStatus = true;
+                if (filterVal === 'UNSET') {
+                    matchStatus = !item.status;
+                } else if (filterVal !== 'ALL') {
+                    matchStatus = item.status === filterVal;
+                }
+
+                if (matchName && matchStatus) {
+                    visibleCount++;
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50/80 transition-colors";
+
+                    // Determine row badge / highlight based on status
+                    const isReasonRequired = item.status === 'Izin' || item.status === 'Sakit';
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 text-center text-xs font-semibold text-slate-400">${idx + 1}</td>
+                        <td class="py-3 px-4 font-medium text-slate-800">
+                            ${highlightText(name, query)}
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="inline-flex flex-wrap gap-1 sm:gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200">
+                                <button type="button" onclick="updateStatus(${idx}, 'Hadir')" 
+                                    class="px-2.5 py-1 text-xs font-semibold rounded-md transition ${item.status === 'Hadir' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}">
+                                    <i class="fa-solid fa-check text-[10px] mr-1"></i>Hadir
+                                </button>
+                                <button type="button" onclick="updateStatus(${idx}, 'Izin')" 
+                                    class="px-2.5 py-1 text-xs font-semibold rounded-md transition ${item.status === 'Izin' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">
+                                    <i class="fa-solid fa-envelope text-[10px] mr-1"></i>Izin
+                                </button>
+                                <button type="button" onclick="updateStatus(${idx}, 'Sakit')" 
+                                    class="px-2.5 py-1 text-xs font-semibold rounded-md transition ${item.status === 'Sakit' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600 hover:text-amber-600 hover:bg-amber-50'}">
+                                    <i class="fa-solid fa-medkit text-[10px] mr-1"></i>Sakit
+                                </button>
+                                <button type="button" onclick="updateStatus(${idx}, 'Alfa')" 
+                                    class="px-2.5 py-1 text-xs font-semibold rounded-md transition ${item.status === 'Alfa' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:text-rose-600 hover:bg-rose-50'}">
+                                    <i class="fa-solid fa-xmark text-[10px] mr-1"></i>Alfa
+                                </button>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            ${isReasonRequired ? `
+                                <div class="relative">
+                                    <input type="text" 
+                                        value="${escapeHtml(item.reason || '')}" 
+                                        placeholder="Tuliskan alasan ${item.status.toLowerCase()}..." 
+                                        onchange="updateReason(${idx}, this.value)"
+                                        onkeyup="updateReason(${idx}, this.value)"
+                                        class="w-full px-3 py-1.5 text-xs rounded-lg border border-amber-300 bg-amber-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition">
+                                </div>
+                            ` : `
+                                <span class="text-xs text-slate-400 italic">Tidak diperlukan</span>
+                            `}
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                }
+            });
+
+            // Handle visibility state
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            showingCount.textContent = `Menampilkan ${visibleCount} dari ${rawStudentNames.length} siswa`;
+            updateStatistics();
+        }
+
+        // Highlight matching text in search
+        function highlightText(text, query) {
+            if (!query) return escapeHtml(text);
+            const reg = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            return escapeHtml(text).replace(reg, '<mark class="bg-amber-200 text-slate-900 rounded px-0.5">$1</mark>');
+        }
+
+        // Safe HTML escaping
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        // Update single student status
+        window.updateStatus = function(idx, newStatus) {
+            if (!attendanceData[currentDate]) attendanceData[currentDate] = {};
+            if (!attendanceData[currentDate][idx]) {
+                attendanceData[currentDate][idx] = { name: rawStudentNames[idx], status: '', reason: '' };
+            }
+            
+            // If switching from Izin/Sakit to Hadir/Alfa, clear reason optionally or keep it
+            attendanceData[currentDate][idx].status = newStatus;
+            if (newStatus !== 'Izin' && newStatus !== 'Sakit') {
+                attendanceData[currentDate][idx].reason = '';
+            }
+
+            saveToLocalStorage();
+            renderTable();
+        };
+
+        // Update reason for student
+        window.updateReason = function(idx, textVal) {
+            if (attendanceData[currentDate] && attendanceData[currentDate][idx]) {
+                attendanceData[currentDate][idx].reason = textVal;
+                saveToLocalStorage();
+            }
+        };
+
+        // Quick Action: Mark all present
+        function markAllPresent() {
+            if (!attendanceData[currentDate]) attendanceData[currentDate] = {};
+            rawStudentNames.forEach((name, idx) => {
+                attendanceData[currentDate][idx] = {
+                    name: name,
+                    status: 'Hadir',
+                    reason: ''
+                };
+            });
+            saveToLocalStorage();
+            renderTable();
+            showToast('Berhasil mengubah semua siswa menjadi Hadir', 'success');
+        }
+
+        // Quick Action: Reset all status
+        function resetAllAttendance() {
+            if (!confirm('Apakah Anda yakin ingin mengosongkan/reset catatan absensi untuk tanggal ini?')) return;
+            
+            attendanceData[currentDate] = {};
+            rawStudentNames.forEach((name, idx) => {
+                attendanceData[currentDate][idx] = {
+                    name: name,
+                    status: '',
+                    reason: ''
+                };
+            });
+            saveToLocalStorage();
+            renderTable();
+            showToast('Data absensi hari ini telah di-reset', 'info');
+        }
+
+        // Update Statistics Counters
+        function updateStatistics() {
+            const dayData = attendanceData[currentDate] || {};
+            const total = rawStudentNames.length;
+            let hadir = 0, izin = 0, sakit = 0, alfa = 0;
+
+            Object.values(dayData).forEach(item => {
+                if (item.status === 'Hadir') hadir++;
+                else if (item.status === 'Izin') izin++;
+                else if (item.status === 'Sakit') sakit++;
+                else if (item.status === 'Alfa') alfa++;
+            });
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statHadir').textContent = hadir;
+            document.getElementById('statIzin').textContent = izin;
+            document.getElementById('statSakit').textContent = sakit;
+            document.getElementById('statAlfa').textContent = alfa;
+
+            document.getElementById('percHadir').textContent = `(${Math.round((hadir/total)*100 || 0)}%)`;
+            document.getElementById('percIzin').textContent = `(${Math.round((izin/total)*100 || 0)}%)`;
+            document.getElementById('percSakit').textContent = `(${Math.round((sakit/total)*100 || 0)}%)`;
+            document.getElementById('percAlfa').textContent = `(${Math.round((alfa/total)*100 || 0)}%)`;
+        }
+
+        // Export data to CSV format
+        function exportToCSV() {
+            const dayData = attendanceData[currentDate] || {};
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += `Tanggal: ${currentDate}\n`;
+            csvContent += "No,Nama Siswa,Status Kehadiran,Alasan (Keterangan)\n";
+
+            rawStudentNames.forEach((name, idx) => {
+                const item = dayData[idx] || { status: '-', reason: '' };
+                const safeName = `"${name.replace(/"/g, '""')}"`;
+                const safeStatus = `"${(item.status || 'Belum Diisi').replace(/"/g, '""')}"`;
+                const safeReason = `"${(item.reason || '-').replace(/"/g, '""')}"`;
+                csvContent += `${idx + 1},${safeName},${safeStatus},${safeReason}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Absensi_Siswa_${currentDate}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('File CSV absensi berhasil diunduh', 'success');
+        }
+
+        // Generate Rekap Text Format
+        function generateRekapText() {
+            const dayData = attendanceData[currentDate] || {};
+            const formattedDate = new Date(currentDate).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let hadirList = [];
+            let izinList = [];
+            let sakitList = [];
+            let alfaList = [];
+
+            rawStudentNames.forEach((name, idx) => {
+                const item = dayData[idx] || { status: '' };
+                if (item.status === 'Hadir') hadirList.push(name);
+                else if (item.status === 'Izin') izinList.push(`${name} (${item.reason || 'Tanpa Keterangan'})`);
+                else if (item.status === 'Sakit') sakitList.push(`${name} (${item.reason || 'Tanpa Keterangan'})`);
+                else if (item.status === 'Alfa') alfaList.push(name);
+            });
+
+            let text = `📋 *REKAPITULASI KEHADIRAN SISWA*\n`;
+            text += `📅 Hari/Tanggal: ${formattedDate}\n`;
+            text += `👥 Total Siswa: ${rawStudentNames.length}\n`;
+            text += `------------------------------------\n\n`;
+
+            text += `✅ *HADIR (${hadirList.length})*\n`;
+            text += `------------------------------------\n\n`;
+
+            text += `📩 *IZIN (${izinList.length})*\n`;
+            if (izinList.length > 0) {
+                izinList.forEach((st, i) => text += `${i + 1}. ${st}\n`);
+            } else {
+                text += `- Nihil\n`;
+            }
+            text += `\n`;
+
+            text += `🏥 *SAKIT (${sakitList.length})*\n`;
+            if (sakitList.length > 0) {
+                sakitList.forEach((st, i) => text += `${i + 1}. ${st}\n`);
+            } else {
+                text += `- Nihil\n`;
+            }
+            text += `\n`;
+
+            text += `❌ *ALFA (${alfaList.length})*\n`;
+            if (alfaList.length > 0) {
+                alfaList.forEach((st, i) => text += `${i + 1}. ${st}\n`);
+            } else {
+                text += `- Nihil\n`;
+            }
+
+            return text;
+        }
+
+        // Modal Handlers
+        function openRekapModal() {
+            const modal = document.getElementById('rekapModal');
+            const textArea = document.getElementById('rekapTextArea');
+            textArea.value = generateRekapText();
+            modal.classList.remove('hidden');
+        }
+
+        function closeRekapModal() {
+            document.getElementById('rekapModal').classList.add('hidden');
+        }
+
+        function copyRekapText() {
+            const textArea = document.getElementById('rekapTextArea');
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('Teks rekapitulasi berhasil disalin ke clipboard!', 'success');
+                closeRekapModal();
+            } catch (err) {
+                showToast('Gagal menyalin teks', 'error');
+            }
+        }
+
+        // Custom Toast Notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-800 text-white';
+            let icon = 'fa-circle-info';
+
+            if (type === 'success') {
+                bgClass = 'bg-emerald-600 text-white';
+                icon = 'fa-circle-check';
+            } else if (type === 'error') {
+                bgClass = 'bg-rose-600 text-white';
+                icon = 'fa-circle-xmark';
+            }
+
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-xs font-medium transition-all transform translate-y-2 opacity-0 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
